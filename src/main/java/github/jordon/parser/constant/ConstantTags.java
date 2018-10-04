@@ -4,7 +4,7 @@ package github.jordon.parser.constant;
  * Tag values for the constant pool entries
  * (using the same order as in the JVMS).
  */
-public interface ConstantTag {
+public interface ConstantTags {
 
     /** The tag value of CONSTANT_Utf8_info JVMS structures. */
     short CONSTANT_UTF8_TAG = 1;

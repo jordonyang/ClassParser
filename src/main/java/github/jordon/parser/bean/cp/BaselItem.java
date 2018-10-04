@@ -1,10 +1,12 @@
-package github.jordon.parser.handler.cp;
+package github.jordon.parser.bean.cp;
 
+import lombok.Getter;
 import lombok.Setter;
 
-import static github.jordon.parser.constant.ConstantTag.*;
+import static github.jordon.parser.constant.ConstantTags.*;
 
 @Setter
+@Getter
 public class BaselItem {
 
     short tag;

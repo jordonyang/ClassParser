@@ -1,4 +1,4 @@
-package github.jordon.parser.handler.cp;
+package github.jordon.parser.bean.cp;
 
 public class MethodTypeItem extends BaselItem {
 

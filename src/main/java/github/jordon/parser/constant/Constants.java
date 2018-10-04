@@ -6,7 +6,7 @@ package github.jordon.parser.constant;
  */
 public final class Constants {
 
-    // Long.parseLong("CAFEBABE", 16)
+    // Long.parseLong("CAFEBABE", 16) 889275714
     public static final long MAGIC = 3405691582L;
 
     private Constants() {}

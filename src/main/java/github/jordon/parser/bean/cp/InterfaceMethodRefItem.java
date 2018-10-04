@@ -1,4 +1,4 @@
-package github.jordon.parser.handler.cp;
+package github.jordon.parser.bean.cp;
 
 import lombok.Getter;
 import lombok.Setter;
