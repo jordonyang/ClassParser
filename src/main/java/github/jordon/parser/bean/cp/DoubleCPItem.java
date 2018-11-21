@@ -7,11 +7,11 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class DoubleItem extends BaselItem {
+public class DoubleCPItem extends BaseCPItem {
     private long lowBytes;
     private long highBytes;
 
-    public DoubleItem() {
+    public DoubleCPItem() {
         this.itemSize = 9;
     }
 }

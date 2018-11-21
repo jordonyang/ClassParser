@@ -7,7 +7,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class LongItem extends BaselItem {
+public class LongItem extends BaseCPItem {
     private long lowBytes;
     private long highBytes;
 

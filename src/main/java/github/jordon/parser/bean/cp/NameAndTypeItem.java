@@ -2,7 +2,7 @@ package github.jordon.parser.bean.cp;
 
 import github.jordon.parser.util.ByteUnitReader;
 
-public class NameAndTypeItem extends BaselItem {
+public class NameAndTypeItem extends BaseCPItem {
     private int cpItemIndex;
     private int cpDescriptorIndex;
 

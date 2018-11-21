@@ -8,10 +8,10 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class ClassItem extends BaselItem {
+public class ClassCPItem extends BaseCPItem {
     private int nameIndex;
 
-    public ClassItem() {
+    public ClassCPItem() {
         this.itemSize = 3;
     }
 
@@ -19,7 +19,7 @@ public class ClassItem extends BaselItem {
     public void handle(int itemOffset, int order) {
         this.order = order;
         this.nameIndex = ByteUnitReader.read2Bytes(classFileBytes, itemOffset + 1);
-//        System.out.println("ClassItem " + itemOffset + " nameIndex " + nameIndex);
+//        System.out.println("ClassCPItem " + itemOffset + " nameIndex " + nameIndex);
         super.handle(itemOffset + itemSize, order + 1);
     }
 

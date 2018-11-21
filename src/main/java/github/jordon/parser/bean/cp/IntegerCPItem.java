@@ -7,10 +7,10 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class IntegerItem extends BaselItem {
+public class IntegerCPItem extends BaseCPItem {
     private long bytes;
 
-    public IntegerItem() {
+    public IntegerCPItem() {
         this.itemSize = 5;
     }
 }

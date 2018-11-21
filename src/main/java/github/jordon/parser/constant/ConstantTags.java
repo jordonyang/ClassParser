@@ -2,7 +2,7 @@ package github.jordon.parser.constant;
 
 /**
  * Tag values for the constant pool entries
- * (using the same order as in the JVMS).
+ * (using the same order as in the Java Visual Machine Specify).
  */
 public interface ConstantTags {
 

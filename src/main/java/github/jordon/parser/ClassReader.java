@@ -6,9 +6,10 @@ import github.jordon.parser.bean.access.ClassAccessFlags;
 import github.jordon.parser.bean.access.FieldAccessFlags;
 import github.jordon.parser.bean.access.MethodAccessFlags;
 import github.jordon.parser.bean.attribute.Attribute;
-import github.jordon.parser.bean.cp.BaselItem;
+import github.jordon.parser.bean.attribute.Code;
+import github.jordon.parser.bean.cp.BaseCPItem;
+import github.jordon.parser.bean.cp.Utf8CPItem;
 import github.jordon.parser.constant.Constants;
-import github.jordon.parser.bean.cp.Utf8Item;
 import github.jordon.parser.util.ByteUnitReader;
 
 import java.io.*;
@@ -32,7 +33,7 @@ public class ClassReader {
 
     private int cpOffset;
 
-    private List<BaselItem> cpItems;
+    private List<BaseCPItem> cpItems;
 
 
     public ClassFile parse() {
@@ -44,8 +45,8 @@ public class ClassReader {
             int majorVersion = read2Bytes();
 
             int cpCount = read2Bytes();
-            List<BaselItem> cpItems = getConstantPoolItems(cpCount);
-            BaselItem cpEntry = cpItems.get(0);
+            List<BaseCPItem> cpItems = getConstantPoolItems(cpCount);
+            BaseCPItem cpEntry = cpItems.get(0);
             cpEntry.handle(cpOffset, 1);
 //            cpEntry.print();
             this.cpItems = cpItems;
@@ -117,16 +118,16 @@ public class ClassReader {
                 int descriptorIndex = read2Bytes();
                 int attrCount = read2Bytes();
                 System.out.println(attrCount);
-                List<Attribute> attributes = getAttributes(attrCount);
+                List<Attribute> attributes = getAttributes(attrCount, byteCursor);
 
                 method.setAccessFlag(accessFlags)
                       .setNameIndex(nameIndex)
                       .setDescriptorIndex(descriptorIndex)
                       .setAttrCount(attrCount)
                       .setMethodName(cpItems.get(nameIndex - 1)
-                          .getByteString(nameIndex))
+                                .getByteString(nameIndex))
                       .setDescriptor(cpItems.get(descriptorIndex - 1)
-                          .getByteString(descriptorIndex));
+                                .getByteString(descriptorIndex));
 
                 System.out.println(method);
                 methods.add(method);
@@ -136,21 +137,28 @@ public class ClassReader {
         return null;
     }
 
-    private List<Attribute> getAttributes(int attributesCount) {
+    private List<Attribute> getAttributes(int attributesCount, int offset) {
         if (attributesCount > 0) {
             List<Attribute> attributes = new ArrayList<>(attributesCount);
             for (int i = 0; i < attributesCount; i++) {
-                int nameIndex = read2Bytes();
-                long length = read4Bytes();
-                System.out.println(nameIndex + " " + length + " " + byteCursor);
-                int attrOffset = byteCursor;
+                int nameIndex = ByteUnitReader.read2Bytes(classFileBytes, offset);
+                long length = ByteUnitReader.read4Bytes(classFileBytes, offset + 2);
+                offset += 6;
                 String attrName = cpItems.get(nameIndex - 1).getByteString(nameIndex);
+                System.out.println("offset: " + offset + " nameIndex: " + nameIndex + " length: " + length + " attrName: " + attrName);
                 Attribute attribute = Attribute.getAttribute(attrName);
-                if (attribute != null) {
-                    attribute.setNameIndex(nameIndex)
-                             .setLength(length);
 
-                    attribute.analyze(classFileBytes, attrOffset);
+                // specially process Code attribute
+                if (attribute != null) {
+                    attribute.setNameIndex(nameIndex).setLength(length);
+                    System.out.println(byteCursor);
+                    attribute.analyze(classFileBytes, offset);
+
+                    if (attribute instanceof Code) {
+                        ((Code) attribute).setAttributes(getAttributes(((Code) attribute).getAttributesCount(),
+                                attribute.getEndPoint()));
+                    }
+                    attributes.add(attribute);
                 }
             }
             return attributes;
@@ -158,20 +166,51 @@ public class ClassReader {
         return null;
     }
 
-    private List<BaselItem> getConstantPoolItems(int cpCount) {
-        List<BaselItem> cpItems = new LinkedList<>();
-        BaselItem head = null;
+
+    private List<Attribute> getAttributes1(int attributesCount) {
+        if (attributesCount > 0) {
+            List<Attribute> attributes = new ArrayList<>(attributesCount);
+            for (int i = 0; i < attributesCount; i++) {
+                int nameIndex = read2Bytes();
+                long length = read4Bytes();
+
+                String attrName = cpItems.get(nameIndex - 1).getByteString(nameIndex);
+                System.out.println("byteCursor: " + byteCursor + " nameIndex: " + nameIndex + " length: " + length + " attrName: " + attrName);
+                Attribute attribute = Attribute.getAttribute(attrName);
+
+                // specially process Code attribute
+                if (attribute != null) {
+                    attribute.setNameIndex(nameIndex)
+                             .setLength(length);
+                    System.out.println(byteCursor);
+                    attribute.analyze(classFileBytes, byteCursor);
+
+//                    if (attribute instanceof Code) {
+//                        ((Code) attribute).setAttributes(getAttributes(((Code) attribute).getAttributesCount(),
+//                                (int) (attrOffset + 8 + ((Code) attribute).getCodeLength())));
+//                    }
+                    attributes.add(attribute);
+                }
+            }
+            return attributes;
+        }
+        return null;
+    }
+
+    private List<BaseCPItem> getConstantPoolItems(int cpCount) {
+        List<BaseCPItem> cpItems = new LinkedList<>();
+        BaseCPItem head = null;
         cpOffset = byteCursor;
         for (int i = 0; i < cpCount - 1; i++) {
             short tag = (short) (classFileBytes[byteCursor] & 0xff);
-            BaselItem cpItem = BaselItem.getConstantPoolItem(tag);
+            BaseCPItem cpItem = BaseCPItem.getConstantPoolItem(tag);
             if (cpItem != null) {
-                if (cpItem instanceof Utf8Item) {
+                if (cpItem instanceof Utf8CPItem) {
                     // skip tag, read length
                     byteCursor ++;
                     moveCursor = false;
                     int length = read2Bytes();
-                    ((Utf8Item) cpItem).setLength(length);
+                    ((Utf8CPItem) cpItem).setLength(length);
                     moveCursor = true;
                     // move back to the entry of the item
                     byteCursor --;
@@ -185,10 +224,10 @@ public class ClassReader {
                     head = cpItem;
                     head.head = head.tail = head;
                 }else {
-                    BaselItem currentTail = head.tail;
+                    BaseCPItem currentTail = head.tail;
                     currentTail.next = cpItem;
                     head.tail = cpItem;
-                    head.tail.last = currentTail;
+                    head.tail.previous = currentTail;
                 }
                 cpItems.add(cpItem);
             }else {
@@ -199,6 +238,11 @@ public class ClassReader {
         return cpItems;
     }
 
+    /**
+     * read interfaces of the class according to its count
+     * @param interfacesCount count of interfaces
+     * @return list of interfaces
+     */
     private List<Interface> getInterfaces(int interfacesCount) {
         if (interfacesCount > 0) {
             List<Interface> interfaces = new ArrayList<>(interfacesCount);
@@ -215,6 +259,10 @@ public class ClassReader {
         return null;
     }
 
+    /**
+     * format binary array of a class file into
+     * hexadecimal string and print it
+     */
     public void printHexArr() {
         String[] strings = ByteUnitReader.binaryToHexString(classFileBytes);
         for (int i = 1; i <= strings.length;i++) {
@@ -249,6 +297,11 @@ public class ClassReader {
         return value;
     }
 
+    /**
+     * transfer input stream of a bytecode file into byte array
+     * @param inputStream input stream of a bytecode file
+     * @return byte array of the bytecode file
+     */
     private byte[] readStream(final InputStream inputStream) {
         try{
             if (inputStream == null) {
@@ -276,6 +329,12 @@ public class ClassReader {
         return new byte[0];
     }
 
+
+    /**
+     * get input stream of a bytecode file
+     * @param filePath path of the bytecode file
+     * @return  input stream of the bytecode file
+     */
     private InputStream getClassFileStream(String filePath) {
         File file = new File(filePath);
         if (file.exists()) {
@@ -289,5 +348,4 @@ public class ClassReader {
         }
         return null;
     }
-
 }

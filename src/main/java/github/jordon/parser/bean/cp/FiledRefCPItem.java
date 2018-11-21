@@ -2,11 +2,11 @@ package github.jordon.parser.bean.cp;
 
 import github.jordon.parser.util.ByteUnitReader;
 
-public class FiledRefItem extends BaselItem {
+public class FiledRefCPItem extends BaseCPItem {
     private int cpClassItemIndex;
     private int cpNameAndTypeItemIndex;
 
-    public FiledRefItem() {
+    public FiledRefCPItem() {
         this.itemSize = 5;
     }
 
@@ -16,7 +16,7 @@ public class FiledRefItem extends BaselItem {
         this.order = order;
         this.cpClassItemIndex = ByteUnitReader.read2Bytes(classFileBytes, itemOffset + 1);
         this.cpNameAndTypeItemIndex = ByteUnitReader.read2Bytes(classFileBytes, itemOffset + 3);
-//        System.out.println("FiledRefItem " + itemOffset + " cpClassItemIndex " + cpClassItemIndex +
+//        System.out.println("FiledRefCPItem " + itemOffset + " cpClassItemIndex " + cpClassItemIndex +
 //                            " cpNameAndTypeItemIndex " + cpNameAndTypeItemIndex);
         super.handle(itemOffset + itemSize, order + 1);
     }

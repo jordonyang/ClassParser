@@ -7,11 +7,11 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class InterfaceMethodRefItem extends BaselItem {
+public class InterfaceMethodRefCPItem extends BaseCPItem {
     private int cpClassItemIndex;
     private int cpNameAndTypeItemIndex;
 
-    public InterfaceMethodRefItem() {
+    public InterfaceMethodRefCPItem() {
         this.itemSize = 5;
     }
 }

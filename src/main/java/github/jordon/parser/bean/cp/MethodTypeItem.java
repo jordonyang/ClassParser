@@ -1,6 +1,6 @@
 package github.jordon.parser.bean.cp;
 
-public class MethodTypeItem extends BaselItem {
+public class MethodTypeItem extends BaseCPItem {
 
     private int descriptorIndex;
 

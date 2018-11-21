@@ -1,10 +1,10 @@
 package github.jordon.parser.bean.cp;
 
-public class InvokeDynamicItem extends BaselItem {
+public class InvokeDynamicCPItem extends BaseCPItem {
     private int bootstrapMethodAttrIndex;
     private int nameAndTypeIndex;
 
-    public InvokeDynamicItem() {
+    public InvokeDynamicCPItem() {
         this.itemSize = 5;
     }
 }

@@ -2,7 +2,7 @@ package github.jordon.parser.bean;
 
 import github.jordon.parser.bean.access.AccessFlags;
 import github.jordon.parser.bean.attribute.Attribute;
-import github.jordon.parser.bean.cp.BaselItem;
+import github.jordon.parser.bean.cp.BaseCPItem;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +22,7 @@ public class ClassFile {
 
     private int cpCount;
 
-    private List<BaselItem> cpItems;
+    private List<BaseCPItem> cpItems;
 
     private AccessFlags accessFlags;
 
@@ -69,7 +69,7 @@ public class ClassFile {
         return this;
     }
 
-    public ClassFile setCpItems(List<BaselItem> cpItems) {
+    public ClassFile setCpItems(List<BaseCPItem> cpItems) {
         this.cpItems = cpItems;
         return this;
     }

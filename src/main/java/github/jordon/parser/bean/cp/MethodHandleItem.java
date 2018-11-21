@@ -7,7 +7,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class MethodHandleItem extends BaselItem {
+public class MethodHandleItem extends BaseCPItem {
     private short refKind;
     private int refIndex;
 

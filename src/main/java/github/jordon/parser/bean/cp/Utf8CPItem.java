@@ -8,11 +8,11 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class Utf8Item extends BaselItem {
+public class Utf8CPItem extends BaseCPItem {
     private int length;
     private String bytesString;
 
-    public Utf8Item() {
+    public Utf8CPItem() {
         this.itemSize = (short) (3 + length);
     }
 
@@ -26,7 +26,7 @@ public class Utf8Item extends BaselItem {
         this.order = order;
         this.length = ByteUnitReader.read2Bytes(classFileBytes, itemOffset + 1);
         this.bytesString = ByteUnitReader.byteToString(classFileBytes, itemOffset + 3, length);
-//        System.out.println("Utf8Item " + itemOffset + " length " + length +
+//        System.out.println("Utf8CPItem " + itemOffset + " length " + length +
 //                            " bytesString " + bytesString);
         super.handle(itemOffset + getItemSize(), order + 1);
     }
